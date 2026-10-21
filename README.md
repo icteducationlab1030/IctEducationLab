@@ -1,5 +1,6 @@
 # ICT Education Lab Website
 ICT教育ラボの情報発信を目的とした静的なWebサイトです。
+ictラボのGmailにて管理
 
 ## 概要
 専修大学小田切ラボのwebサイトです。
