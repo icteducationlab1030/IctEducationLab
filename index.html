@@ -21,12 +21,13 @@
         <main id="top">
             <section class="hero">
                 <div class="container hero-grid">
-                    <div>
-                        <h1>キャッチコピー</h1>
+                    <div class="hero-copy reveal">
+                        <span class="eyebrow">教育×ICT×地域連携</span>
+                        <h1>子どもたちの学びを、もっと明るく。</h1>
                         <p>
-                            こんにちは！専修大学ネットワーク情報学部ICT教育ラボです！<br>
-                            地域の小学生や中学生、高校生に向けたICT教育の推進を目標に活動しています。
-                            プログラミング教室の開催や、SNSを活用した情報は発信を行なっています。
+                            専修大学ネットワーク情報学部 ICT教育ラボでは、地域の子どもたちや学校の先生方とともに、
+                            ICTを活用した学びのあり方を探しています。<br>
+                            プログラミング体験や授業支援、情報発信を通じて、未来の学びをサポートします。
                         </p>
                         <div class="btn-row">
                             <a class="btn btn-primary" href="#contact">お問い合わせ</a>
@@ -35,7 +36,7 @@
                     </div>
                 </div>
 
-                <div class="hero-card">
+                <div class="hero-card reveal">
                     <h2>今後の取り組み</h2>
                     <ul>
                         <li>授業支援とICT活用研修</li>
@@ -47,20 +48,20 @@
 
             <section id="about">
                 <div class="container">
-                    <h2 class="section-title">About</h2>
-                    <p class="section-subtitle">
+                    <h2 class="section-title reveal">About</h2>
+                    <p class="section-subtitle reveal">
                         教育現場での課題に寄り添いながら、実践に近い形でICTを活かすことを目指しています。
                     </p>
                     <div class="cards">
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>教育の質向上</h3>
                             <p>授業設計から実践、振り返りまで一貫して支援します。</p>
                         </article>
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>デジタルリテラシー</h3>
                             <p>子どもたちが主体的に学べる環境づくりを重視しています。</p>
                         </article>
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>地域連携</h3>
                             <p>学校・家庭・地域とつながる学びの実現を目指します。</p>
                         </article>
@@ -69,20 +70,20 @@
             </section>
             <section id="activities">
                 <div class="container">
-                    <h2 class="section-title">Activities</h2>
-                    <p class="section-subtitle">
+                    <h2 class="section-title reveal">Activities</h2>
+                    <p class="section-subtitle reveal">
                         研修、授業実践、研究発信など、多角的な活動を展開しています。
                     </p>
                     <div class="cards">
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>授業実践支援</h3>
                             <p>ICTを取り入れた授業づくりを一緒に考え、提案します。</p>
                         </article>
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>ワークショップ</h3>
                             <p>先生方や学生向けに、実践的な学びの場を提供します。</p>
                         </article>
-                        <article class="card">
+                        <article class="card reveal">
                             <h3>研究・発信</h3>
                             <p>教育実践の成果を整理し、公開・共有していきます。</p>
                         </article>
@@ -91,12 +92,13 @@
             </section>
             <section id="contact">
                 <div class="container">
-                    <div class="contact">
+                    <div class="contact reveal">
                         <h2 class="section-title">Contact</h2>
                         <p class="section-subtitle">
                             ご質問・ご相談・共同研究のご依頼はこちらからお願いします。
                         </p>
                         <p><strong>メール：</strong> info@icteducation-lab.example</p>
+                        <p><strong>所属：</strong> 専修大学ネットワーク情報学部 ICT教育ラボ</p>
                         <p><strong>所在地：</strong> 〇〇県〇〇市　〇〇区</p>
                     </div>
                 </div>
@@ -107,5 +109,24 @@
                 <p>© 2026 ICT教育ラボ</p>
             </div>
         </footer>
+
+        <script>
+            const revealItems = document.querySelectorAll('.reveal');
+
+            const revealObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                },
+                {
+                    threshold: 0.15,
+                }
+            );
+
+            revealItems.forEach((item) => revealObserver.observe(item));
+        </script>
     </body>
 </html>
