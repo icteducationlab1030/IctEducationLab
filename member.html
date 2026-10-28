@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>メンバー紹介 | ICT教育ラボ</title>
+    </head>
+    <body>
+        <header>
+            <div class="container nav">
+                <a class="brand" href="index.html#top">ICT教育ラボ</a>
+                <nav class="nav-links">
+                    <a href="index.html#about">About</a>
+                    <a href="index.html#activities">Activities</a>
+                    <a href="member.html">Members</a>
+                    <a href="works.html">Works</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="page-header">
+                <div class="container">
+                    <h1>Members</h1>
+                    <p>
+                        ICT教育ラボは、教育現場での課題を解決するために、教育実践・研究・支援を担うメンバーが協働しています。
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <div class="container">
+                    <div class="member-summary reveal">
+                        私たちは、教育の質向上と地域連携を両輪とし、授業支援・データ分析・研究発信の各領域において協力しています。
+                    </div>
+
+                    <div class="member-grid reveal">
+                        <article class="member-card">
+                            <span class="role-tag">代表</span>
+                            <h3>研究責任者</h3>
+                            <p>
+                                ICT教育の方向性を定め、教育現場での課題と可能性を整理しながら、研究と実践の橋渡しを行います。
+                            </p>
+                        </article>
+
+                        <article class="member-card">
+                            <span class="role-tag">教育研究</span>
+                            <h3>教育研究メンバー</h3>
+                            <p>
+                                授業づくりや学習データの可視化に取り組み、教育実践に基づく知見を整理し発信しています。
+                            </p>
+                        </article>
+
+                        <article class="member-card">
+                            <span class="role-tag">学生支援</span>
+                            <h3>学生メンバー</h3>
+                            <p>
+                                学生が主体的に参加し、実践の中で学びを深めながら、今後の教育を支える人材育成を目指しています。
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <h2 class="section-title">Our Approach</h2>
+                        <p class="section-subtitle">
+                            学びを支えるために、技術と教育の両面からアプローチしています。
+                        </p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">実践</span>
+                            <h3>授業支援</h3>
+                            <p>教員や学生と協働し、授業にICTを自然に取り入れる方法を検討します。</p>
+                        </article>
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">分析</span>
+                            <h3>データ活用</h3>
+                            <p>学習の変化や成果を整理し、今後の改善につなげるための分析を行います。</p>
+                        </article>
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">発信</span>
+                            <h3>研究発信</h3>
+                            <p>成果やノウハウを共有し、教育現場におけるICT活用の推進に貢献します。</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>© 2026 ICT教育ラボ</p>
+            </div>
+        </footer>
+
+        <script>
+            const revealItems = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            revealItems.forEach((item) => revealObserver.observe(item));
+        </script>
+    </body>
+</html>

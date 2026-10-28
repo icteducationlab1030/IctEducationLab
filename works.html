@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>作品紹介 | ICT教育ラボ</title>
+    </head>
+    <body>
+        <header>
+            <div class="container nav">
+                <a class="brand" href="index.html#top">ICT教育ラボ</a>
+                <nav class="nav-links">
+                    <a href="index.html#about">About</a>
+                    <a href="index.html#activities">Activities</a>
+                    <a href="member.html">Members</a>
+                    <a href="works.html">Works</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="page-header">
+                <div class="container">
+                    <h1>Works</h1>
+                    <p>
+                        ICT教育ラボで取り組んでいる実践や制作物を紹介します。<br>
+                        教育現場での活用を視野に、実践と発信を両立したプロジェクトを展開しています。
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <div class="container">
+                    <div class="work-summary reveal">
+                        本ページでは、教育支援、データ可視化、発信活動を通じて取り組んできた成果を紹介しています。
+                    </div>
+
+                    <div class="work-grid reveal">
+                        <article class="work-card">
+                            <span class="project-tag">教育支援</span>
+                            <h3>授業支援ツール</h3>
+                            <p>
+                                教員が授業の流れを設計しやすくするために、ICTを活用した支援ツールの企画と検討を進めています。
+                            </p>
+                            <div class="link-row">
+                                <a class="github-link" href="https://github.com/icteducationlab1030/IctEducationLab" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </article>
+
+                        <article class="work-card">
+                            <span class="project-tag">データ分析</span>
+                            <h3>教育データの可視化</h3>
+                            <p>
+                                学習状況や活動の変化を可視化し、授業の振り返りや改善につなげる仕組みの検討を進めています。
+                            </p>
+                            <div class="link-row">
+                                <a class="github-link" href="https://github.com/icteducationlab1030/IctEducationLab" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </article>
+
+                        <article class="work-card">
+                            <span class="project-tag">発信</span>
+                            <h3>研究成果の公開</h3>
+                            <p>
+                                実践の知見や成果を整理し、教育現場で利用できる形にして発信する活動を行っています。
+                            </p>
+                            <div class="link-row">
+                                <a class="github-link" href="https://github.com/icteducationlab1030/IctEducationLab" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <h2 class="section-title">What We Value</h2>
+                        <p class="section-subtitle">
+                            単なる技術の導入ではなく、実際の教育の改善に結びつくプロジェクトづくりを重視しています。
+                        </p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">実用性</span>
+                            <h3>現場で使える形</h3>
+                            <p>教師や学生が直感的に利用できる構造を意識して設計しています。</p>
+                        </article>
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">共有性</span>
+                            <h3>知見の共有</h3>
+                            <p>発見や改善を公開し、他の教育現場に活かせるようにしています。</p>
+                        </article>
+                        <article class="feature-card reveal">
+                            <span class="feature-badge">継続性</span>
+                            <h3>改善の継続</h3>
+                            <p>実際の利用を踏まえて、常に改善を続ける設計思想を重視しています。</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>© 2026 ICT教育ラボ</p>
+            </div>
+        </footer>
+
+        <script>
+            const revealItems = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            revealItems.forEach((item) => revealObserver.observe(item));
+        </script>
+    </body>
+</html>
