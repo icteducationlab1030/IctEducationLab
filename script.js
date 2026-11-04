@@ -7,30 +7,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const balloonField = document.querySelector('.hero .balloon-field');
 
   if (balloonField && hero) {
-    const balloonCount = 420;
+    const balloonCount = 560;
     const balloons = [];
 
     for (let i = 0; i < balloonCount; i += 1) {
       const balloon = document.createElement('span');
       balloon.className = 'balloon';
-      const size = 8 + Math.random() * 38;
-      const x = 10 + Math.random() * 78;
-      const y = 12 + Math.random() * 70;
-      const opacity = 0.28 + Math.random() * 0.56;
+      const size = 8 + Math.random() * 72;
+      const x = 1 + Math.random() * 98;
+      const y = 2 + Math.random() * 96;
+      const opacity = 0.28 + Math.random() * 0.72;
 
       balloon.style.width = `${size}px`;
       balloon.style.height = `${size}px`;
       balloon.style.left = `${x}%`;
       balloon.style.top = `${y}%`;
       balloon.style.opacity = `${opacity}`;
-      balloon.style.setProperty('--scale', (0.8 + Math.random() * 1.6).toFixed(2));
-      balloon.style.setProperty('--bx', `${(Math.random() * 18 - 9).toFixed(2)}px`);
-      balloon.style.setProperty('--by', `${(Math.random() * 18 - 9).toFixed(2)}px`);
+      balloon.style.setProperty('--scale', (0.8 + Math.random() * 2.2).toFixed(2));
+      balloon.style.setProperty('--depth', `${(Math.random() * 28 - 14).toFixed(2)}px`);
+      balloon.style.setProperty('--bx', `${(Math.random() * 14 - 7).toFixed(2)}px`);
+      balloon.style.setProperty('--by', `${(Math.random() * 14 - 7).toFixed(2)}px`);
       balloonField.appendChild(balloon);
+
       balloons.push({
         el: balloon,
-        baseX: (Math.random() * 20 - 10).toFixed(2),
-        baseY: (Math.random() * 20 - 10).toFixed(2),
+        baseX: x,
+        baseY: y,
+        driftX: (Math.random() * 18 - 9),
+        driftY: (Math.random() * 18 - 9),
+        layer: Math.random(),
       });
     }
 
@@ -38,20 +43,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const rect = hero.getBoundingClientRect();
       const localX = (mouseX - rect.left) / rect.width;
       const localY = (mouseY - rect.top) / rect.height;
+      const now = Date.now() * 0.001;
 
       balloons.forEach((balloon, index) => {
-        const wave = Math.sin((Date.now() * 0.0012) + index * 0.8);
-        const offsetX = (localX - 0.5) * 58 * (1 + index / 30);
-        const offsetY = (localY - 0.5) * 46 * (1 + index / 30);
-        const x = Number(balloon.baseX) + offsetX + wave * 6;
-        const y = Number(balloon.baseY) + offsetY + Math.cos(index + Date.now() * 0.0017) * 5;
-        balloon.el.style.setProperty('--bx', `${x}px`);
-        balloon.el.style.setProperty('--by', `${y}px`);
+        const dx = localX * 100 - balloon.baseX;
+        const dy = localY * 100 - balloon.baseY;
+        const dist = Math.hypot(dx, dy);
+        const repelRadius = 18 + balloon.layer * 30;
+        const idleX = balloon.driftX + Math.sin(now * 1.2 + index * 0.7) * 2.6;
+        const idleY = balloon.driftY + Math.cos(now * 1.5 + index * 0.9) * 2.2;
+
+        let offsetX = idleX;
+        let offsetY = idleY;
+
+        if (dist < repelRadius * 7) {
+          const push = (1 - dist / (repelRadius * 7)) * 46;
+          const dirX = dx / (dist || 1);
+          const dirY = dy / (dist || 1);
+          offsetX -= dirX * push;
+          offsetY -= dirY * push;
+        }
+
+        balloon.el.style.setProperty('--bx', `${offsetX.toFixed(2)}px`);
+        balloon.el.style.setProperty('--by', `${offsetY.toFixed(2)}px`);
       });
     };
 
     let currentMouseX = window.innerWidth * 0.5;
     let currentMouseY = window.innerHeight * 0.5;
+    let lastRender = 0;
 
     hero.addEventListener('pointermove', (event) => {
       currentMouseX = event.clientX;
@@ -61,13 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hero.addEventListener('pointerleave', () => {
       balloons.forEach((balloon) => {
-        balloon.el.style.setProperty('--bx', `${balloon.baseX}px`);
-        balloon.el.style.setProperty('--by', `${balloon.baseY}px`);
+        balloon.el.style.setProperty('--bx', `${balloon.driftX.toFixed(2)}px`);
+        balloon.el.style.setProperty('--by', `${balloon.driftY.toFixed(2)}px`);
       });
     });
 
-    const tickBalloons = () => {
-      updateBalloons(currentMouseX, currentMouseY);
+    const tickBalloons = (timestamp) => {
+      if (timestamp - lastRender > 24) {
+        updateBalloons(currentMouseX, currentMouseY);
+        lastRender = timestamp;
+      }
       requestAnimationFrame(tickBalloons);
     };
 
@@ -112,6 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
       time: 0,
     };
 
+    const baseOffsets = chars.map((char, index) => ({
+      x: (index - chars.length / 2) * 0,
+      y: 0,
+    }));
+
     const updateLogo = () => {
       const moveX = state.currentX;
       const moveY = state.currentY;
@@ -125,8 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       chars.forEach((char, index) => {
         const drift = (index - chars.length / 2) * 2.2;
-        const offsetX = moveX * (0.5 + index * 0.08) + Math.sin(state.time * 0.002 + index * 0.9) * 7;
-        const offsetY = moveY * (0.42 + index * 0.06) + Math.cos(state.time * 0.0017 + index * 1.2) * 7;
+        const dragX = Number(char.dataset.dragX || 0);
+        const dragY = Number(char.dataset.dragY || 0);
+        const offsetX = moveX * (0.5 + index * 0.08) + Math.sin(state.time * 0.002 + index * 0.9) * 7 + dragX;
+        const offsetY = moveY * (0.42 + index * 0.06) + Math.cos(state.time * 0.0017 + index * 1.2) * 7 + dragY;
         const rotate = (moveX * 0.8) + drift * 1.1 + Math.sin(state.time * 0.004 + index) * 12;
         const blur = state.active ? Math.min(3, Math.abs(moveX) * 0.04 + Math.abs(moveY) * 0.03) : 0;
 
@@ -151,6 +181,39 @@ document.addEventListener('DOMContentLoaded', () => {
       requestAnimationFrame(tick);
     };
 
+    chars.forEach((char) => {
+      char.dataset.dragX = '0';
+      char.dataset.dragY = '0';
+      char.style.touchAction = 'none';
+      char.style.cursor = 'grab';
+
+      char.addEventListener('pointerdown', (event) => {
+        char.setPointerCapture(event.pointerId);
+        char.dataset.dragging = 'true';
+        char.dataset.dragStartX = String(Number(char.dataset.dragX || 0));
+        char.dataset.dragStartY = String(Number(char.dataset.dragY || 0));
+        char.dataset.pointerStartX = String(event.clientX);
+        char.dataset.pointerStartY = String(event.clientY);
+      });
+
+      char.addEventListener('pointermove', (event) => {
+        if (char.dataset.dragging !== 'true') return;
+
+        const dx = event.clientX - Number(char.dataset.pointerStartX);
+        const dy = event.clientY - Number(char.dataset.pointerStartY);
+        char.dataset.dragX = String(Number(char.dataset.dragStartX) + dx * 0.9);
+        char.dataset.dragY = String(Number(char.dataset.dragStartY) + dy * 0.9);
+      });
+
+      char.addEventListener('pointerup', () => {
+        char.dataset.dragging = 'false';
+      });
+
+      char.addEventListener('pointerleave', () => {
+        char.dataset.dragging = 'false';
+      });
+    });
+
     hero.addEventListener('pointermove', (event) => {
       const rect = hero.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -160,14 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const distance = Math.hypot(dx, dy);
       const maxDistance = 260;
 
-      state.active = true;
+      state.active = distance < maxDistance;
       const normalized = distance === 0 ? 0 : Math.min(1, distance / maxDistance);
       const repel = 1 - normalized;
       const forceX = (dx / Math.max(distance, 1)) * 110 * repel;
       const forceY = (dy / Math.max(distance, 1)) * 90 * repel;
 
-      state.pointerX = -forceX;
-      state.pointerY = -forceY;
+      state.pointerX = -forceX * 0.18;
+      state.pointerY = -forceY * 0.18;
 
       if (buddy) {
         const reveal = Math.abs(dx) > 70 || Math.abs(dy) > 70;
