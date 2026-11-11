@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const balloonField = document.querySelector('.hero .balloon-field');
 
   if (balloonField && hero) {
-    const balloonCount = 560;
+    const balloonCount = 700;
     const balloons = [];
 
     for (let i = 0; i < balloonCount; i += 1) {
@@ -25,44 +25,40 @@ document.addEventListener('DOMContentLoaded', () => {
       balloon.style.opacity = `${opacity}`;
       balloon.style.setProperty('--scale', (0.8 + Math.random() * 2.2).toFixed(2));
       balloon.style.setProperty('--depth', `${(Math.random() * 28 - 14).toFixed(2)}px`);
-      balloon.style.setProperty('--bx', `${(Math.random() * 14 - 7).toFixed(2)}px`);
-      balloon.style.setProperty('--by', `${(Math.random() * 14 - 7).toFixed(2)}px`);
+      balloon.style.setProperty('--float-duration', `${(8 + Math.random() * 12).toFixed(2)}s`);
       balloonField.appendChild(balloon);
 
       balloons.push({
         el: balloon,
         baseX: x,
         baseY: y,
-        driftX: (Math.random() * 18 - 9),
-        driftY: (Math.random() * 18 - 9),
-        layer: Math.random(),
+        radius: 140 + size * 1.2,
       });
     }
 
     const updateBalloons = (mouseX, mouseY) => {
       const rect = hero.getBoundingClientRect();
-      const localX = (mouseX - rect.left) / rect.width;
-      const localY = (mouseY - rect.top) / rect.height;
-      const now = Date.now() * 0.001;
 
-      balloons.forEach((balloon, index) => {
-        const dx = localX * 100 - balloon.baseX;
-        const dy = localY * 100 - balloon.baseY;
-        const dist = Math.hypot(dx, dy);
-        const repelRadius = 18 + balloon.layer * 30;
-        const idleX = balloon.driftX + Math.sin(now * 1.2 + index * 0.7) * 2.6;
-        const idleY = balloon.driftY + Math.cos(now * 1.5 + index * 0.9) * 2.2;
+      balloons.forEach((balloon) => {
+        const px = rect.left + (rect.width * balloon.baseX / 100);
+        const py = rect.top + (rect.height * balloon.baseY / 100);
+        const dx = mouseX - px;
+        const dy = mouseY - py;
+        const distSq = dx * dx + dy * dy;
+        const activeRadiusSq = balloon.radius * balloon.radius;
 
-        let offsetX = idleX;
-        let offsetY = idleY;
-
-        if (dist < repelRadius * 7) {
-          const push = (1 - dist / (repelRadius * 7)) * 46;
-          const dirX = dx / (dist || 1);
-          const dirY = dy / (dist || 1);
-          offsetX -= dirX * push;
-          offsetY -= dirY * push;
+        if (distSq > activeRadiusSq) {
+          balloon.el.style.setProperty('--bx', '0px');
+          balloon.el.style.setProperty('--by', '0px');
+          return;
         }
+
+        const dist = Math.sqrt(distSq) || 1;
+        const push = (1 - dist / balloon.radius) * 26;
+        const dirX = dx / dist;
+        const dirY = dy / dist;
+        const offsetX = -dirX * push;
+        const offsetY = -dirY * push;
 
         balloon.el.style.setProperty('--bx', `${offsetX.toFixed(2)}px`);
         balloon.el.style.setProperty('--by', `${offsetY.toFixed(2)}px`);
@@ -81,13 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hero.addEventListener('pointerleave', () => {
       balloons.forEach((balloon) => {
-        balloon.el.style.setProperty('--bx', `${balloon.driftX.toFixed(2)}px`);
-        balloon.el.style.setProperty('--by', `${balloon.driftY.toFixed(2)}px`);
+        balloon.el.style.setProperty('--bx', '0px');
+        balloon.el.style.setProperty('--by', '0px');
       });
     });
 
     const tickBalloons = (timestamp) => {
-      if (timestamp - lastRender > 24) {
+      if (timestamp - lastRender > 32) {
         updateBalloons(currentMouseX, currentMouseY);
         lastRender = timestamp;
       }
@@ -232,13 +228,66 @@ document.addEventListener('DOMContentLoaded', () => {
       state.pointerX = -forceX * 0.18;
       state.pointerY = -forceY * 0.18;
 
-      if (buddy) {
-        const reveal = Math.abs(dx) > 70 || Math.abs(dy) > 70;
-        if (reveal) {
-          buddy.classList.add('visible');
-        }
-      }
     });
+
+    if (buddy) {
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      const buddyColor = {
+        r: 156,
+        g: 210,
+        b: 255,
+        targetR: 156,
+        targetG: 210,
+        targetB: 255,
+      };
+
+      const applyBuddyColor = () => {
+        buddy.style.setProperty('--buddy-r', `${Math.round(buddyColor.r)}`);
+        buddy.style.setProperty('--buddy-g', `${Math.round(buddyColor.g)}`);
+        buddy.style.setProperty('--buddy-b', `${Math.round(buddyColor.b)}`);
+      };
+
+      applyBuddyColor();
+
+      const animateBuddyColor = () => {
+        buddyColor.r += (buddyColor.targetR - buddyColor.r) * 0.08;
+        buddyColor.g += (buddyColor.targetG - buddyColor.g) * 0.08;
+        buddyColor.b += (buddyColor.targetB - buddyColor.b) * 0.08;
+        applyBuddyColor();
+        requestAnimationFrame(animateBuddyColor);
+      };
+
+      requestAnimationFrame(animateBuddyColor);
+
+      buddy.addEventListener('pointermove', (event) => {
+        const rect = buddy.getBoundingClientRect();
+        const px = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+        const py = clamp((event.clientY - rect.top) / rect.height, 0, 1);
+        const hue = (px * 360 + py * 80 + Date.now() * 0.01) % 360;
+
+        let r = 255;
+        let g = 255;
+        let b = 255;
+
+        if (hue < 60) {
+          r = 255; g = Math.round(255 * hue / 60); b = 0;
+        } else if (hue < 120) {
+          r = Math.round(255 * (120 - hue) / 60); g = 255; b = 0;
+        } else if (hue < 180) {
+          r = 0; g = 255; b = Math.round(255 * (hue - 120) / 60);
+        } else if (hue < 240) {
+          r = 0; g = Math.round(255 * (240 - hue) / 60); b = 255;
+        } else if (hue < 300) {
+          r = Math.round(255 * (hue - 240) / 60); g = 0; b = 255;
+        } else {
+          r = 255; g = 0; b = Math.round(255 * (360 - hue) / 60);
+        }
+
+        buddyColor.targetR = r * (0.72 + py * 0.3);
+        buddyColor.targetG = g * (0.72 + px * 0.3);
+        buddyColor.targetB = b * (0.72 + (1 - py) * 0.3);
+      });
+    }
 
     hero.addEventListener('pointerleave', () => {
       state.active = false;
